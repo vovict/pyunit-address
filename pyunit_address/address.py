@@ -23,7 +23,8 @@ class Address:
         """
 
         # 加载精准匹配的词库，共40万
-        self.suffix_stop = '[省市县区]'
+        self.suffix_stop_re = re.compile('省|市|县|区|(回族|维吾尔|壮族)自治区$')
+        self.name_stop_re = re.compile('^市辖区|县$')
         self.ac = ahocorasick.Automaton()
         self.count = itertools.count(0)
         self.is_max_address = is_max_address
@@ -85,10 +86,9 @@ class Address:
 
     def _unzip(self) -> (list, dict):
         """解压地址数据包"""
-        name = 'address'
-        bz = bz2.BZ2File(os.path.dirname(__file__) + os.sep + name + '.bz2')
-        lines = bz.read().decode('utf-8')
-        address = json.loads(lines[512:-1134], encoding='utf8')
+        name = 'address.json'
+        with open(os.path.join(os.path.dirname(__file__), name)) as f:
+            address = json.load(f, encoding='utf8')
         root = MultiTree(value='中国', parent=None)
         for one_k, one_v in address.items():
             one = MultiTree(value=one_k, parent=root)
@@ -98,20 +98,10 @@ class Address:
                 two = MultiTree(value=two_k, parent=one)
                 one.add_children(two)
                 self.flag_ac_contain_key(two_k, two)
-                for three_k, three_v in two_v.items():
+                for three_k in two_v:
                     three = MultiTree(value=three_k, parent=two)
                     two.add_children(three)
                     self.flag_ac_contain_key(three_k, three)
-                    for four_k, four_v in three_v.items():
-                        four_k = reset_key(four_k)
-                        four = MultiTree(value=four_k, parent=three)
-                        three.add_children(four)
-                        self.flag_ac_contain_key(four_k, four)
-                        for five_k in four_v:
-                            five_k = reset_key(five_k)
-                            five = MultiTree(value=five_k, parent=four)
-                            four.add_children(five)
-                            self.flag_ac_contain_key(five_k, five)
         return root
 
     def max_match_cut(self, sentence):
@@ -127,7 +117,9 @@ class Address:
 
     def flag_ac_contain_key(self, key, obj):
         """判断ac自动机里面是否包含相同的key值"""
-        stop_key = re.sub(self.suffix_stop, '', key)  # 包含一些停用词
+        if self.name_stop_re.match(key):
+            return
+        stop_key = self.suffix_stop_re.sub('', key)  # 包含一些停用词
         flag = True if len(stop_key) <= 1 else (stop_key == key)
         if key not in self.ac:
             flag or self.ac.add_word(stop_key, [obj])

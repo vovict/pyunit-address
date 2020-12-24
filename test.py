@@ -12,11 +12,13 @@ address.add_vague_text('贵州省-遵义市-遵义县-虾子镇-乐安村-乐石
 
 
 def find_address_test():
-    af = find_address(address, '我家在贵州遵义红花岗区，你家在贵州贵阳花溪区')
+    # af = find_address(address, '我家在贵州遵义红花岗区，你家在贵州贵阳花溪区')
+    af = find_address(address, '我家在海淀, 你家在莒南')
     print(af)  # ['贵州遵义红花岗区', '贵州贵阳花溪区']
 
 
 def test_supplement_address():
+    print(supplement_address(address, '我家在海淀, 你家在莒南', is_order=True))  # ['贵州省-遵义市-遵义县-虾子镇-乐安村-乐石台']
     print(supplement_address(address, '我家在遵义市乐石台', is_order=True))  # ['贵州省-遵义市-遵义县-虾子镇-乐安村-乐石台']
     print(supplement_address(address, '山西孝义镇'))  # ['山西省-吕梁市-文水县-孝义镇']
     print(supplement_address(address, '我在三家镇乐安村'))  # ['海南省-省直辖县级行政区划-东方市-三家镇-乐安村']
@@ -26,9 +28,9 @@ def test_supplement_address():
 def correct_address_test():
     print(correct_address(address, '贵州省遵义市花溪区'))  # 贵州省-贵阳市-花溪区
 
-
 def all_test():
-    string_ = '我家在红花岗，你家在贵州贵阳花溪区,他家在贵州省遵义市花溪区'
+    # string_ = '我家在红花岗，你家在贵州贵阳花溪区,他家在贵州省遵义市花溪区'
+    string_ = '我家在海淀, 你家在莒南'
     finds = find_address(address, string_)
     for find in finds:
         print()

@@ -9,9 +9,9 @@ from .findAddress import find_address  # 查询地址
 from .supplementAddress import supplement_address  # 补全地址
 from .tool import *
 
-__version__ = '2020.8.27'
-__author__ = 'Jtyoui'
-__description__ = '全国五级地址查询'
-__email__ = 'jtyoui@qq.com'
+__version__ = '2020.12.24'
+__author__ = 'dongwang4'
+__description__ = '全国三级地址查询'
+__email__ = 'dongwang4@iflytek.com'
 __names__ = 'pyUnit_address'
-__url__ = 'https://github.com/PyUnit/pyunit-address'
+__url__ = 'https://github.com/vovict/pyunit-address'
